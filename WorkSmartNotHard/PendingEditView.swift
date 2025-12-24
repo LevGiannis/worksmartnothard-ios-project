@@ -26,6 +26,7 @@ struct PendingEditView: View {
     @State private var isDone = false
     @State private var selectedCategoryId: UUID? = nil
     @State private var selectedPendingType: PendingType = .none
+    @State private var showDeleteAlert = false
 
     var body: some View {
         Form {
@@ -73,6 +74,21 @@ struct PendingEditView: View {
                     item.isDone = isDone
                     do { try modelContext.save() } catch {}
                     dismiss()
+                }
+                Button(role: .destructive) {
+                    showDeleteAlert = true
+                } label: {
+                    Text("Διαγραφή εκκρεμότητας")
+                }
+                .alert("Διαγραφή;", isPresented: $showDeleteAlert) {
+                    Button("Διαγραφή", role: .destructive) {
+                        modelContext.delete(item)
+                        do { try modelContext.save() } catch {}
+                        dismiss()
+                    }
+                    Button("Άκυρο", role: .cancel) {}
+                } message: {
+                    Text("Θέλεις σίγουρα να διαγράψεις αυτή την εκκρεμότητα;")
                 }
             }
         }
