@@ -32,6 +32,8 @@ enum VodafoneHomeWFSubtype: String, CaseIterable, Identifiable {
     case tripleVdsl = "TRIPLE VDSL"
     case ftthDouble = "FTTH DOUBLE"
     case ftthTriple = "FTTH TRIPLE"
+    case fwa = "FWA"
+    case fwaVoice = "FWA VOICE"
 
     var id: String { rawValue }
 }
