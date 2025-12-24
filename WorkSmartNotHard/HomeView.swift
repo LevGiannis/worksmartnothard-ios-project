@@ -1,9 +1,9 @@
     // Υπολογισμός μέσου όρου ποσοστών επιτυχίας για τις κατηγορίες με στόχο
     private var averagePercent: Int {
-        let pcts = categoriesWithTarget.map { cat in
-            let t = target(for: cat.id)
-            let p = produced(for: cat.id)
-            return percent(produced: p, target: t)
+        let pcts = self.categoriesWithTarget.map { cat in
+            let t = self.target(for: cat.id)
+            let p = self.produced(for: cat.id)
+            return self.percent(produced: p, target: t)
         }
         guard !pcts.isEmpty else { return 0 }
         return pcts.reduce(0, +) / pcts.count
