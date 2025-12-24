@@ -11,8 +11,17 @@ struct DailyEntryView: View {
     @State private var selectedDate: Date
     @State private var localValues: [UUID: Int] = [:]
     @State private var localSubtypes: [UUID: VodafoneHomeWFSubtype] = [:]
-    // Για πολλαπλά subtypes Vodafone Home W/F
-    @State private var vodafoneWFEntries: [(VodafoneHomeWFSubtype, Int)] = []
+    struct VodafoneWFEntry: Identifiable, Equatable {
+        let id: UUID
+        var subtype: VodafoneHomeWFSubtype
+        var value: Int
+        init(subtype: VodafoneHomeWFSubtype, value: Int) {
+            self.id = UUID()
+            self.subtype = subtype
+            self.value = value
+        }
+    }
+    @State private var vodafoneWFEntries: [VodafoneWFEntry] = []
 
     init(monthStart: Date, initialDate: Date? = nil) {
         let ms = monthStart.startOfMonth
@@ -70,11 +79,15 @@ struct DailyEntryView: View {
                         if cat.name == SalesCategory.vodafoneHomeWF.rawValue {
                             VStack(alignment: .leading) {
                                 Text("Vodafone Home W/F (πολλαπλοί υποτύποι)").font(.headline)
-                                ForEach(Array(vodafoneWFEntries.enumerated()), id: \ .offset) { idx, entry in
+                                ForEach(vodafoneWFEntries) { entry in
                                     HStack {
                                         Picker("Υποτύπος", selection: Binding(
-                                            get: { vodafoneWFEntries[idx].0 },
-                                            set: { vodafoneWFEntries[idx].0 = $0 }
+                                            get: { entry.subtype },
+                                            set: { newSubtype in
+                                                if let idx = vodafoneWFEntries.firstIndex(of: entry) {
+                                                    vodafoneWFEntries[idx].subtype = newSubtype
+                                                }
+                                            }
                                         )) {
                                             ForEach(VodafoneHomeWFSubtype.allCases) { subtype in
                                                 Text(subtype.rawValue).tag(subtype)
@@ -82,22 +95,28 @@ struct DailyEntryView: View {
                                         }
                                         .pickerStyle(.menu)
                                         Stepper(
-                                            "\(vodafoneWFEntries[idx].1)",
+                                            "\(entry.value)",
                                             value: Binding(
-                                                get: { vodafoneWFEntries[idx].1 },
-                                                set: { vodafoneWFEntries[idx].1 = $0 }
+                                                get: { entry.value },
+                                                set: { newValue in
+                                                    if let idx = vodafoneWFEntries.firstIndex(of: entry) {
+                                                        vodafoneWFEntries[idx].value = newValue
+                                                    }
+                                                }
                                             ),
                                             in: 0...10_000
                                         )
                                         Button(role: .destructive) {
-                                            vodafoneWFEntries.remove(at: idx)
+                                            if let idx = vodafoneWFEntries.firstIndex(of: entry) {
+                                                vodafoneWFEntries.remove(at: idx)
+                                            }
                                         } label: {
                                             Image(systemName: "minus.circle")
                                         }
                                     }
                                 }
                                 Button {
-                                    vodafoneWFEntries.append((VodafoneHomeWFSubtype.adsl, 0))
+                                    vodafoneWFEntries.append(VodafoneWFEntry(subtype: .adsl, value: 0))
                                 } label: {
                                     Label("Προσθήκη υποτύπου", systemImage: "plus")
                                 }
@@ -152,7 +171,7 @@ struct DailyEntryView: View {
             for v in rec.values {
                 if let subtype = v.subtype, v.categoryName == SalesCategory.vodafoneHomeWF.rawValue {
                     if let st = VodafoneHomeWFSubtype(rawValue: subtype) {
-                        vodafoneWFEntries.append((st, v.value))
+                        vodafoneWFEntries.append(VodafoneWFEntry(subtype: st, value: v.value))
                     }
                 } else {
                     localValues[v.categoryId] = v.value
@@ -190,8 +209,8 @@ struct DailyEntryView: View {
         // Vodafone Home W/F: διαγράφουμε παλιές και προσθέτουμε όλες τις νέες
         if let vodafoneCat = activeCategories.first(where: { $0.name == SalesCategory.vodafoneHomeWF.rawValue }) {
             rec.values.removeAll(where: { $0.categoryId == vodafoneCat.id })
-            for (subtype, value) in vodafoneWFEntries {
-                rec.values.append(DailyValue(categoryId: vodafoneCat.id, categoryName: vodafoneCat.name, value: value, subtype: subtype.rawValue))
+            for entry in vodafoneWFEntries {
+                rec.values.append(DailyValue(categoryId: vodafoneCat.id, categoryName: vodafoneCat.name, value: entry.value, subtype: entry.subtype.rawValue))
             }
         }
 
