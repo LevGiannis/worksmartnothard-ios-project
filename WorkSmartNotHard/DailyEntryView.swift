@@ -79,37 +79,21 @@ struct DailyEntryView: View {
                         if cat.name == SalesCategory.vodafoneHomeWF.rawValue {
                             VStack(alignment: .leading) {
                                 Text("Vodafone Home W/F (πολλαπλοί υποτύποι)").font(.headline)
-                                ForEach(vodafoneWFEntries) { entry in
+                                ForEach(vodafoneWFEntries.indices, id: \.self) { idx in
                                     HStack {
-                                        Picker("Υποτύπος", selection: Binding(
-                                            get: { entry.subtype },
-                                            set: { newSubtype in
-                                                if let idx = vodafoneWFEntries.firstIndex(of: entry) {
-                                                    vodafoneWFEntries[idx].subtype = newSubtype
-                                                }
-                                            }
-                                        )) {
+                                        Picker("Υποτύπος", selection: $vodafoneWFEntries[idx].subtype) {
                                             ForEach(VodafoneHomeWFSubtype.allCases) { subtype in
                                                 Text(subtype.rawValue).tag(subtype)
                                             }
                                         }
                                         .pickerStyle(.menu)
                                         Stepper(
-                                            "\(entry.value)",
-                                            value: Binding(
-                                                get: { entry.value },
-                                                set: { newValue in
-                                                    if let idx = vodafoneWFEntries.firstIndex(of: entry) {
-                                                        vodafoneWFEntries[idx].value = newValue
-                                                    }
-                                                }
-                                            ),
+                                            "\(vodafoneWFEntries[idx].value)",
+                                            value: $vodafoneWFEntries[idx].value,
                                             in: 0...10_000
                                         )
                                         Button(role: .destructive) {
-                                            if let idx = vodafoneWFEntries.firstIndex(of: entry) {
-                                                vodafoneWFEntries.remove(at: idx)
-                                            }
+                                            vodafoneWFEntries.remove(at: idx)
                                         } label: {
                                             Image(systemName: "minus.circle")
                                         }
