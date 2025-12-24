@@ -1,3 +1,13 @@
+    // Υπολογισμός μέσου όρου ποσοστών επιτυχίας για τις κατηγορίες με στόχο
+    private var averagePercent: Int {
+        let pcts = categoriesWithTarget.map { cat in
+            let t = target(for: cat.id)
+            let p = produced(for: cat.id)
+            return percent(produced: p, target: t)
+        }
+        guard !pcts.isEmpty else { return 0 }
+        return pcts.reduce(0, +) / pcts.count
+    }
 import SwiftUI
 import SwiftData
 
@@ -60,6 +70,15 @@ struct HomeView: View {
 
                     // Header
                     VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Text("Μέσος όρος επίτευξης στόχων:")
+                                .font(.headline)
+                            Spacer()
+                            Text("\(averagePercent)%")
+                                .font(.title2)
+                                .bold()
+                                .foregroundColor(.green)
+                        }
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Κατάστημα")
