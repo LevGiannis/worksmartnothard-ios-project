@@ -26,10 +26,7 @@ struct PendingCreateView: View {
 
     private var isValid: Bool {
         !customerName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        (!mobilePhone.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !landlinePhone.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) &&
-        !afm.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        !details.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        (selectedCategoryId != nil || selectedPendingType != .none)
+        !details.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var body: some View {
@@ -40,7 +37,7 @@ struct PendingCreateView: View {
                     .keyboardType(.phonePad)
                 TextField("Σταθερό (προαιρετικό)", text: $landlinePhone)
                     .keyboardType(.phonePad)
-                TextField("ΑΦΜ", text: $afm)
+                TextField("ΑΦΜ (προαιρετικό)", text: $afm)
                     .keyboardType(.numberPad)
                 TextField("Περιγραφή εκκρεμότητας", text: $details, axis: .vertical)
                     .lineLimit(4...8)
@@ -48,8 +45,8 @@ struct PendingCreateView: View {
                 Text("Νέα εκκρεμότητα")
             }
 
-            Section("Κατηγορία ή Τύπος εκκρεμότητας") {
-                Picker("Κατηγορία (προαιρετικό)", selection: $selectedCategoryId) {
+            Section("Κατηγορία ή Τύπος εκκρεμότητας (προαιρετικά)") {
+                Picker("Κατηγορία", selection: $selectedCategoryId) {
                     Text("-").tag(UUID?.none)
                     ForEach(categories) { cat in
                         Text(cat.name).tag(UUID?.some(cat.id))
@@ -73,7 +70,7 @@ struct PendingCreateView: View {
                         mobilePhone: mobilePhone.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : mobilePhone.trimmingCharacters(in: .whitespacesAndNewlines),
                         landlinePhone: landlinePhone.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : landlinePhone.trimmingCharacters(in: .whitespacesAndNewlines),
                         phone: (mobilePhone.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? landlinePhone : mobilePhone).trimmingCharacters(in: .whitespacesAndNewlines),
-                        afm: afm.trimmingCharacters(in: .whitespacesAndNewlines),
+                        afm: afm.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "" : afm.trimmingCharacters(in: .whitespacesAndNewlines),
                         details: details.trimmingCharacters(in: .whitespacesAndNewlines),
                         categoryId: selectedCategoryId,
                         categoryName: catName,

@@ -33,7 +33,7 @@ struct PendingEditView: View {
                 TextField("Όνομα πελάτη", text: $customerName)
                 TextField("Κινητό (προαιρετικό)", text: $mobilePhone).keyboardType(.phonePad)
                 TextField("Σταθερό (προαιρετικό)", text: $landlinePhone).keyboardType(.phonePad)
-                TextField("ΑΦΜ", text: $afm).keyboardType(.numberPad)
+                TextField("ΑΦΜ (προαιρετικό)", text: $afm).keyboardType(.numberPad)
                 TextField("Περιγραφή εκκρεμότητας", text: $details, axis: .vertical)
                     .lineLimit(4...8)
                 Toggle("Ολοκληρώθηκε", isOn: $isDone)
@@ -41,8 +41,8 @@ struct PendingEditView: View {
                 Text("Επεξεργασία")
             }
 
-            Section("Κατηγορία ή Τύπος εκκρεμότητας") {
-                Picker("Κατηγορία (προαιρετικό)", selection: $selectedCategoryId) {
+            Section("Κατηγορία ή Τύπος εκκρεμότητας (προαιρετικά)") {
+                Picker("Κατηγορία", selection: $selectedCategoryId) {
                     Text("-").tag(UUID?.none)
                     ForEach(categories) { cat in
                         Text(cat.name).tag(UUID?.some(cat.id))
@@ -65,7 +65,7 @@ struct PendingEditView: View {
                     item.mobilePhone = mobilePhone.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : mobilePhone.trimmingCharacters(in: .whitespacesAndNewlines)
                     item.landlinePhone = landlinePhone.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : landlinePhone.trimmingCharacters(in: .whitespacesAndNewlines)
                     item.phone = (mobilePhone.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? landlinePhone : mobilePhone).trimmingCharacters(in: .whitespacesAndNewlines)
-                    item.afm = afm.trimmingCharacters(in: .whitespacesAndNewlines)
+                    item.afm = afm.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "" : afm.trimmingCharacters(in: .whitespacesAndNewlines)
                     item.details = details.trimmingCharacters(in: .whitespacesAndNewlines)
                     item.categoryId = selectedCategoryId
                     item.categoryName = catName
