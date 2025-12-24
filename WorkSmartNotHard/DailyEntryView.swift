@@ -70,7 +70,7 @@ struct DailyEntryView: View {
                         if cat.name == SalesCategory.vodafoneHomeWF.rawValue {
                             VStack(alignment: .leading) {
                                 Text("Vodafone Home W/F (πολλαπλοί υποτύποι)").font(.headline)
-                                ForEach(0..<vodafoneWFEntries.count, id: \ .self) { idx in
+                                ForEach(Array(vodafoneWFEntries.enumerated()), id: \ .offset) { idx, entry in
                                     HStack {
                                         Picker("Υποτύπος", selection: Binding(
                                             get: { vodafoneWFEntries[idx].0 },
