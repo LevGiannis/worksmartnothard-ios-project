@@ -16,6 +16,9 @@ enum PendingType: String, CaseIterable, Identifiable {
     case prosfora = "Προσφορά"
     case service = "Service"
     case paraggelia = "Παραγγελία"
+    case metakomisi = "Μετακόμιση"
+    case dikaiologitika = "Δικαιολογητικά"
+    case synainesi = "Συναίνεση"
 
     var id: String { rawValue }
 }
