@@ -1,13 +1,3 @@
-    // Υπολογισμός μέσου όρου ποσοστών επιτυχίας για τις κατηγορίες με στόχο
-    private var averagePercent: Int {
-        let pcts = self.categoriesWithTarget.map { cat in
-            let t = self.target(for: cat.id)
-            let p = self.produced(for: cat.id)
-            return self.percent(produced: p, target: t)
-        }
-        guard !pcts.isEmpty else { return 0 }
-        return pcts.reduce(0, +) / pcts.count
-    }
 import SwiftUI
 import SwiftData
 
@@ -28,6 +18,17 @@ struct HomeView: View {
 
     private var activeCategories: [AppCategory] {
         categories.filter { $0.isActive }
+    }
+
+    // Υπολογισμός μέσου όρου ποσοστών επιτυχίας για τις κατηγορίες με στόχο
+    private var averagePercent: Int {
+        let pcts = self.categoriesWithTarget.map { cat in
+            let t = self.target(for: cat.id)
+            let p = self.produced(for: cat.id)
+            return self.percent(produced: p, target: t)
+        }
+        guard !pcts.isEmpty else { return 0 }
+        return pcts.reduce(0, +) / pcts.count
     }
 
     // MARK: - Progress Calculations (for current month)
@@ -77,7 +78,7 @@ struct HomeView: View {
                             Text("\(averagePercent)%")
                                 .font(.title2)
                                 .bold()
-                                .foregroundColor(.green)
+                                .foregroundColor(accentColor)
                         }
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {

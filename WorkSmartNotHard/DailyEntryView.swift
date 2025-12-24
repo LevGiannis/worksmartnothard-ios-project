@@ -79,21 +79,26 @@ struct DailyEntryView: View {
                         if cat.name == SalesCategory.vodafoneHomeWF.rawValue {
                             VStack(alignment: .leading) {
                                 Text("Vodafone Home W/F (πολλαπλοί υποτύποι)").font(.headline)
-                                ForEach(vodafoneWFEntries.indices, id: \.self) { idx in
+                                ForEach($vodafoneWFEntries, id: \.id) { $entry in
                                     HStack {
-                                        Picker("Υποτύπος", selection: $vodafoneWFEntries[idx].subtype) {
+                                        Picker("Υποτύπος", selection: $entry.subtype) {
                                             ForEach(VodafoneHomeWFSubtype.allCases) { subtype in
                                                 Text(subtype.rawValue).tag(subtype)
                                             }
                                         }
                                         .pickerStyle(.menu)
                                         Stepper(
-                                            "\(vodafoneWFEntries[idx].value)",
-                                            value: $vodafoneWFEntries[idx].value,
+                                            "\(entry.value)",
+                                            value: $entry.value,
                                             in: 0...10_000
                                         )
                                         Button(role: .destructive) {
-                                            vodafoneWFEntries.remove(at: idx)
+                                            let entryId = entry.id
+                                            DispatchQueue.main.async {
+                                                if let idx = vodafoneWFEntries.firstIndex(where: { $0.id == entryId }) {
+                                                    vodafoneWFEntries.remove(at: idx)
+                                                }
+                                            }
                                         } label: {
                                             Image(systemName: "minus.circle")
                                         }
