@@ -104,6 +104,7 @@ struct DailyEntryView: View {
                                 } label: {
                                     Label("Προσθήκη υποτύπου", systemImage: "plus")
                                 }
+                                .buttonStyle(.plain)
                             }
                         } else {
                             VStack(alignment: .leading) {
