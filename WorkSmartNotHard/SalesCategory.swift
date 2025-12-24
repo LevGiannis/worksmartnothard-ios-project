@@ -24,3 +24,14 @@ enum SalesCategory: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 }
+
+enum VodafoneHomeWFSubtype: String, CaseIterable, Identifiable {
+    case adsl = "ADSL"
+    case tripleAdsl = "TRIPLE ADSL"
+    case vdsl = "VDSL"
+    case tripleVdsl = "TRIPLE VDSL"
+    case ftthDouble = "FTTH DOUBLE"
+    case ftthTriple = "FTTH TRIPLE"
+
+    var id: String { rawValue }
+}

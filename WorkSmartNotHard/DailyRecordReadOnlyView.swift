@@ -7,12 +7,12 @@ struct DailyRecordReadOnlyView: View {
     var body: some View {
         List {
             Section {
-                Text(record.date, style: .date)
+                Text(record.date.formatted(.dateTime.day().month(.wide).year().locale(Locale(identifier: "el_GR"))))
                     .font(.headline)
                 Text("Σύνολο ημέρας: \(total)")
                     .foregroundStyle(.secondary)
             } header: {
-                Text("Ημερομηνία")
+                Text("ΗΜΕΡΟΜΗΝΙΑ")
             }
 
             Section {
@@ -22,7 +22,11 @@ struct DailyRecordReadOnlyView: View {
                 } else {
                     ForEach(displayedValues, id: \.id) { v in
                         HStack {
-                            Text(v.categoryName)
+                            if v.categoryName == SalesCategory.vodafoneHomeWF.rawValue, let subtype = v.subtype, !subtype.isEmpty {
+                                Text("\(v.categoryName) [\(subtype)]")
+                            } else {
+                                Text(v.categoryName)
+                            }
                             Spacer()
                             Text("\(v.value)")
                                 .font(.headline)
@@ -31,7 +35,7 @@ struct DailyRecordReadOnlyView: View {
                     }
                 }
             } header: {
-                Text("Ποσότητες ανά κατηγορία")
+                Text("ΠΟΣΟΤΗΤΕΣ ΑΝΑ ΚΑΤΗΓΟΡΙΑ")
             } footer: {
                 Text("Μόνο προβολή — δεν επιτρέπονται τροποποιήσεις από το ιστορικό.")
             }

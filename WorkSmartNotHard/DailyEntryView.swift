@@ -10,6 +10,7 @@ struct DailyEntryView: View {
 
     @State private var selectedDate: Date
     @State private var localValues: [UUID: Int] = [:]
+    @State private var localSubtypes: [UUID: VodafoneHomeWFSubtype] = [:]
 
     init(monthStart: Date, initialDate: Date? = nil) {
         let ms = monthStart.startOfMonth
@@ -64,14 +65,37 @@ struct DailyEntryView: View {
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(activeCategories) { cat in
-                        Stepper(
-                            "\(cat.name): \(localValues[cat.id] ?? currentValue(for: cat.id))",
-                            value: Binding(
-                                get: { localValues[cat.id] ?? currentValue(for: cat.id) },
-                                set: { localValues[cat.id] = $0 }
-                            ),
-                            in: 0...10_000
-                        )
+                        VStack(alignment: .leading) {
+                            if cat.name == SalesCategory.vodafoneHomeWF.rawValue {
+                                Picker("Υποτύπος", selection: Binding(
+                                    get: { localSubtypes[cat.id] ?? VodafoneHomeWFSubtype.adsl },
+                                    set: { localSubtypes[cat.id] = $0 }
+                                )) {
+                                    ForEach(VodafoneHomeWFSubtype.allCases) { subtype in
+                                        Text(subtype.rawValue).tag(subtype)
+                                    }
+                                }
+                                .pickerStyle(.menu)
+                            }
+                            let valueText: String = {
+                                if cat.name == SalesCategory.vodafoneHomeWF.rawValue,
+                                   let rec = recordForSelectedDay(),
+                                   let v = rec.values.first(where: { $0.categoryId == cat.id }),
+                                   let subtype = v.subtype, !subtype.isEmpty {
+                                    return "\(cat.name) [\(subtype)]: \(localValues[cat.id] ?? currentValue(for: cat.id))"
+                                } else {
+                                    return "\(cat.name): \(localValues[cat.id] ?? currentValue(for: cat.id))"
+                                }
+                            }()
+                            Stepper(
+                                valueText,
+                                value: Binding(
+                                    get: { localValues[cat.id] ?? currentValue(for: cat.id) },
+                                    set: { localValues[cat.id] = $0 }
+                                ),
+                                in: 0...10_000
+                            )
+                        }
                     }
                 }
             } header: {
@@ -127,12 +151,16 @@ struct DailyEntryView: View {
 
         for cat in activeCategories {
             let newVal = max(0, localValues[cat.id] ?? currentValue(for: cat.id))
-
+            var subtype: String? = nil
+            if cat.name == SalesCategory.vodafoneHomeWF.rawValue {
+                subtype = localSubtypes[cat.id]?.rawValue
+            }
             if let existingVal = rec.values.first(where: { $0.categoryId == cat.id }) {
                 existingVal.value = newVal
                 existingVal.categoryName = cat.name
+                existingVal.subtype = subtype
             } else {
-                rec.values.append(DailyValue(categoryId: cat.id, categoryName: cat.name, value: newVal))
+                rec.values.append(DailyValue(categoryId: cat.id, categoryName: cat.name, value: newVal, subtype: subtype))
             }
         }
 

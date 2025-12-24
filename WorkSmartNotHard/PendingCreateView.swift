@@ -57,6 +57,7 @@ struct PendingCreateView: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Άκυρο") { dismiss() }
+                    .foregroundColor(AccentColorOption(rawValue: UserDefaults.standard.string(forKey: "accentColor") ?? AccentColorOption.blue.rawValue)?.color ?? .blue)
             }
         }
     }

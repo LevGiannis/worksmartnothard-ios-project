@@ -29,11 +29,13 @@ final class DailyValue {
     var categoryId: UUID
     var categoryName: String
     var value: Int
+    var subtype: String?
 
-    init(categoryId: UUID, categoryName: String, value: Int) {
+    init(categoryId: UUID, categoryName: String, value: Int, subtype: String? = nil) {
         self.id = UUID()
         self.categoryId = categoryId
         self.categoryName = categoryName
         self.value = value
+        self.subtype = subtype
     }
 }

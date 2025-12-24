@@ -47,6 +47,12 @@ struct HomeView: View {
         activeCategories.filter { target(for: $0.id) > 0 }
     }
 
+    @AppStorage("accentColor") private var accentColorRaw: String = AccentColorOption.blue.rawValue
+
+    var accentColor: Color {
+        AccentColorOption(rawValue: accentColorRaw)?.color ?? .blue
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -92,6 +98,7 @@ struct HomeView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.borderedProminent)
+                        .tint(accentColor)
 
                         // Read-only history
                         NavigationLink {
@@ -101,6 +108,7 @@ struct HomeView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.bordered)
+                        .tint(accentColor)
 
                         HStack(spacing: 12) {
                             NavigationLink {
@@ -110,6 +118,7 @@ struct HomeView: View {
                                     .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.bordered)
+                            .tint(accentColor)
 
                             NavigationLink {
                                 CategoriesView()
@@ -118,6 +127,7 @@ struct HomeView: View {
                                     .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.bordered)
+                            .tint(accentColor)
                         }
 
                         NavigationLink {
@@ -127,6 +137,7 @@ struct HomeView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.bordered)
+                        .tint(accentColor)
                     }
 
                     // Current month progress (only categories with target > 0)
@@ -160,6 +171,7 @@ struct HomeView: View {
                                     }
 
                                     ProgressView(value: Double(min(p, t)), total: Double(t))
+                                        .accentColor(accentColor)
 
                                     HStack {
                                         Text("Παραγωγή: \(p)")

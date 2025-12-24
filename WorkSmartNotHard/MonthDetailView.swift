@@ -68,18 +68,57 @@ struct MonthDetailView: View {
         }
         .navigationTitle(plan.monthStart.monthTitleGR)
         .toolbar {
-            NavigationLink {
-                DailyEntryView(monthStart: plan.monthStart, initialDate: Date())
-            } label: {
-                Text("Νέα ημέρα")
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                NavigationLink {
+                    DailyEntryView(monthStart: plan.monthStart, initialDate: Date())
+                } label: {
+                    Text("Νέα ημέρα")
+                }
+                Button(action: exportCSV) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+            }
+        }
+        .sheet(isPresented: $showingExporter) {
+            if let exportURL = exportURL {
+                ShareSheet(activityItems: [exportURL])
             }
         }
     }
+
+    @State private var showingExporter = false
+    @State private var exportURL: URL? = nil
 
     private var categoriesWithTargets: [Goal] {
         plan.goals
             .filter { $0.target > 0 }
             .sorted { $0.categoryName.localizedCaseInsensitiveCompare($1.categoryName) == .orderedAscending }
+    }
+
+    private func exportCSV() {
+        let header = "Κατηγορία,Παραγωγή,Στόχος,Ποσοστό"
+        let rows = categoriesWithTargets.map { g in
+            let produced = producedForCategory(g.categoryId)
+            let pct = percent(produced: produced, target: g.target)
+            return "\(g.categoryName),\(produced),\(g.target),\(pct)%"
+        }
+        let csv = ([header] + rows).joined(separator: "\n")
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("Export-\(plan.monthStart.monthKey).csv")
+        do {
+            try csv.write(to: tempURL, atomically: true, encoding: .utf8)
+            exportURL = tempURL
+            showingExporter = true
+        } catch {
+            // handle error αν θες
+        }
+    }
+
+    struct ShareSheet: UIViewControllerRepresentable {
+        let activityItems: [Any]
+        func makeUIViewController(context: Context) -> UIActivityViewController {
+            UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+        }
+        func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
     }
 
     private var sortedRecords: [DailyRecord] {
